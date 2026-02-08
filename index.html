@@ -1,136 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Stranger Things VR - House Experience</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stranger Things VR - A Casa de Mike (Bonito!)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <video id="input_video" style="display:none;"></video>
+    <canvas id="three-canvas"></canvas>
+
+    <div id="loading-screen">
+        <p>Carregando o Mundo Invertido...</p>
+        <div class="loader"></div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./lib/three.module.js",
+                "GLTFLoader": "./lib/GLTFLoader.js",
+                "OrbitControls": "./lib/OrbitControls.js"
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden; background: #000;">
-
-    <video id="input_video" style="display:none;"></video>
-
-    <a-scene fog="type: exponential; color: #0a0a0a; density: 0.1">
-        
-        <a-assets>
-            <audio id="ambient-theme" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
-            <audio id="teleport-sfx" src="https://actions.google.com/sounds/v1/science_fiction/beam_me_up.ogg" preload="auto"></audio>
-        </a-assets>
-
-        <a-sky color="#050505"></a-sky>
-
-        <a-entity id="rig" position="0 1.6 0">
-            <a-camera id="camera" look-controls="enabled: true">
-                <a-entity id="hand-cursor" 
-                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                          material="color: #ff0000; shader: flat"
-                          position="0 0 -1"
-                          raycaster="objects: .ground, .interactable; far: 30">
-                </a-entity>
-                <a-light type="spot" color="#fff" intensity="1.5" distance="15" angle="25"></a-light>
-            </a-camera>
-        </a-entity>
-
-        <a-plane id="floor" class="ground" rotation="-90 0 0" width="50" height="50" color="#1a1a1a"></a-plane>
-
-        <a-box position="0 2 -10" width="20" height="4" depth="0.5" color="#3d2b1f"></a-box>
-        <a-box position="-10 2 0" width="0.5" height="4" depth="20" color="#3d2b1f"></a-box>
-        <a-box position="10 2 0" width="0.5" height="4" depth="20" color="#3d2b1f"></a-box>
-
-        <a-entity id="mike" class="interactable" position="-2 0 -5">
-            <a-cylinder radius="0.4" height="1.7" color="#2b5070"></a-cylinder>
-            <a-text value="MIKE" align="center" position="0 2 0" width="4"></a-text>
-        </a-entity>
-
-        <a-entity id="dustin" class="interactable" position="2 0 -5">
-            <a-cylinder radius="0.4" height="1.5" color="#f1c40f"></a-cylinder>
-            <a-text value="DUSTIN" align="center" position="0 1.8 0" width="4"></a-text>
-        </a-entity>
-
-        <a-entity id="nancy" class="interactable" position="0 0 -12">
-            <a-cylinder radius="0.35" height="1.65" color="#e91e63"></a-cylinder>
-            <a-text value="NANCY" align="center" position="0 2 0" width="4"></a-text>
-        </a-entity>
-
-        <a-entity id="christmas-lights" position="0 3 -9.8">
-            <a-sphere position="-1 0 0" radius="0.1" color="red" animation="property: material.opacity; from: 1; to: 0.2; dur: 500; loop: true; dir: alternate"></a-sphere>
-            <a-sphere position="0 0 0" radius="0.1" color="yellow" animation="property: material.opacity; from: 0.2; to: 1; dur: 700; loop: true; dir: alternate"></a-sphere>
-            <a-sphere position="1 0 0" radius="0.1" color="blue" animation="property: material.opacity; from: 1; to: 0.2; dur: 600; loop: true; dir: alternate"></a-sphere>
-        </a-entity>
-
-    </a-scene>
-
-    <script type="module">
-        const videoElement = document.getElementById('input_video');
-        const cursor = document.getElementById('hand-cursor');
-        const rig = document.getElementById('rig');
-        const teleportSfx = document.getElementById('teleport-sfx');
-        const ambientTheme = document.getElementById('ambient-theme');
-
-        let isPinching = false;
-
-        // Inicia áudio no primeiro clique
-        document.body.addEventListener('click', () => {
-            ambientTheme.play();
-        }, { once: true });
-
-        function onResults(results) {
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                const hand = results.multiHandLandmarks[0];
-                
-                const thumbTip = hand[4];
-                const indexTip = hand[8];
-
-                // 1. Mover o cursor conforme o dedo indicador
-                // Mapeamento: 0.5 é o centro. Multiplicamos para dar alcance lateral.
-                const cursorX = (indexTip.x - 0.5) * -3; 
-                const cursorY = (indexTip.y - 0.5) * -2;
-                cursor.setAttribute('position', {x: cursorX, y: cursorY, z: -1.5});
-
-                // 2. Rotação "Sem Giroscópio": Se a mão estiver na borda, gira a câmera
-                if (indexTip.x < 0.2) rig.object3D.rotation.y += 0.03;
-                if (indexTip.x > 0.8) rig.object3D.rotation.y -= 0.03;
-
-                // 3. Detectar Gesto de Pinça (Teletransporte)
-                const distance = Math.sqrt(
-                    Math.pow(thumbTip.x - indexTip.x, 2) + 
-                    Math.pow(thumbTip.y - indexTip.y, 2)
-                );
-
-                if (distance < 0.05) {
-                    if (!isPinching) {
-                        isPinching = true;
-                        executeTeleport();
-                    }
-                } else {
-                    isPinching = false;
-                }
-            }
-        }
-
-        function executeTeleport() {
-            const raycaster = cursor.components.raycaster;
-            const intersection = raycaster.getIntersection(document.getElementById('floor'));
-            
-            if (intersection) {
-                const target = intersection.point;
-                teleportSfx.play();
-                
-                // Movimenta o jogador
-                rig.setAttribute('position', {x: target.x, y: 1.6, z: target.z});
-            }
-        }
-
-        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-        hands.onResults(onResults);
-
-        const camera = new Camera(videoElement, {
-            onFrame: async () => { await hands.send({image: videoElement}); },
-            width: 640, height: 480
-        });
-        camera.start();
-    </script>
+    
+    <script type="module" src="main.js"></script>
 </body>
 </html>
