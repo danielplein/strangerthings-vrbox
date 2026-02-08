@@ -2,183 +2,120 @@
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
-    <title>Stranger Things VR - Living Room Edition</title>
+    <title>Stranger Things VR - Living Room Teleport</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; background: #000; }
-        #vr-btn {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; padding: 20px 40px; background: #8b0000; color: white;
-            border: 2px solid #ff0000; font-family: 'Courier New', monospace;
-            font-weight: bold; cursor: pointer; text-shadow: 0 0 10px #f00;
+        #btn-start {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 1000; padding: 25px 50px; background: #b00; color: #fff;
+            border: 3px solid #ff0000; font-family: monospace; font-weight: bold;
+            font-size: 20px; cursor: pointer; border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
-    <button id="vr-btn" onclick="initGame()">INICIAR EXPERIÊNCIA VR</button>
+    <button id="btn-start">ATIVAR VR & SENSORES</button>
 
     <a-scene vr-mode-ui="enabled: true" shadow="type: pcfsoft" fog="type: exponential; color: #080808; density: 0.1">
         
         <a-assets>
-            <img id="wallpaper" src="https://cdn.aframe.io/examples/showcase/asset-door.jpg"> <img id="wood-floor" src="https://cdn.aframe.io/examples/showcase/asset-wood.jpg">
-            <a-mixin id="light-bulb" geometry="primitive: sphere; radius: 0.05" material="emissiveIntensity: 2; emissive: #ffddaa"></a-mixin>
-            <a-mixin id="telekinetic-hand-model" geometry="primitive: box; width: 0.1; height: 0.08; depth: 0.15" material="color: #ff0000; emissive: #ff0000; emissiveIntensity: 3; opacity: 0.7; transparent: true"></a-mixin>
+            <a-mixin id="teleport-ring" geometry="primitive: ring; radiusInner: 0.15; radiusOuter: 0.2" material="color: #00ff00; shader: flat" rotation="-90 0 0"></a-mixin>
         </a-assets>
 
-        <a-entity id="rig" position="0 1.6 4"> <a-camera id="cam" look-controls="pointerLockEnabled: true">
-                <a-cursor id="cursor" visible="false" raycaster="objects: .target"></a-cursor>
-                
-                <a-entity id="flashlight" light="type: spot; intensity: 2; distance: 15; angle: 30; penumbra: 0.5; color: #fff" position="0.3 -0.2 0"></a-entity>
+        <a-entity id="rig" position="0 0 0">
+            <a-camera id="cam" look-controls="enabled: true; magicWindowTrackingEnabled: true; touchEnabled: true">
+                <a-entity cursor="fuse: true; fuseTimeout: 1500"
+                          position="0 0 -1"
+                          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                          material="color: white; shader: flat"
+                          raycaster="objects: .floor, .target">
+                    <a-animation begin="fusing" easing="ease-in" attribute="scale" fill="forwards" from="1 1 1" to="0.1 0.1 0.1" dur="1500"></a-animation>
+                    <a-animation begin="mouseleave" attribute="scale" fill="backwards" to="1 1 1" dur="100"></a-animation>
+                </a-entity>
 
-                <a-entity mixin="telekinetic-hand-model" id="left-hand" position="-0.4 -0.4 -0.8">
-                    <a-animation attribute="material.emissiveIntensity" from="1" to="4" dur="500" direction="alternate" repeat="indefinite"></a-animation>
-                </a-entity>
-                <a-entity mixin="telekinetic-hand-model" id="right-hand" position="0.4 -0.4 -0.8">
-                    <a-animation attribute="material.emissiveIntensity" from="1" to="4" dur="500" direction="alternate" repeat="indefinite" delay="250"></a-animation>
-                </a-entity>
+                <a-entity id="leftHand" geometry="primitive: box; width: 0.1; height: 0.05; depth: 0.2" material="color: #ff0000; emissive: #ff0000; emissiveIntensity: 2" position="-0.4 -0.3 -0.7"></a-entity>
+                <a-entity id="rightHand" geometry="primitive: box; width: 0.1; height: 0.05; depth: 0.2" material="color: #ff0000; emissive: #ff0000; emissiveIntensity: 2" position="0.4 -0.3 -0.7"></a-entity>
             </a-camera>
         </a-entity>
 
-        <a-sky color="#050505"></a-sky>
+        <a-sky color="#020202"></a-sky>
+        <a-plane class="floor" rotation="-90 0 0" width="30" height="30" color="#2b1a0f" shadow="receive: true"></a-plane>
         
-        <a-plane rotation="-90 0 0" width="10" height="10" material="src: #wood-floor; repeat: 5 5" shadow="receive: true"></a-plane>
+        <a-box position="0 2.5 -6" width="12" height="5" depth="0.5" color="#d2b48c"></a-box> 
+        <a-box position="-6 2.5 0" rotation="0 90 0" width="12" height="5" depth="0.5" color="#d2b48c"></a-box>
+        <a-box position="6 2.5 0" rotation="0 90 0" width="12" height="5" depth="0.5" color="#d2b48c"></a-box>
+        <a-box position="0 5 0" rotation="90 0 0" width="12" height="12" color="#1a110a"></a-box> <a-box position="0 0.5 -5.2" width="2" height="1" depth="1" color="#4a2c16"></a-box> <a-entity id="xmas-lights" position="0 4 -5.7"></a-entity>
 
-        <a-box position="0 2.5 -5" width="10" height="5" depth="0.1" material="src: #wallpaper; repeat: 2 2" shadow="receive: true"></a-box>
-        <a-box position="5 2.5 0" rotation="0 -90 0" width="10" height="5" depth="0.1" material="src: #wallpaper; repeat: 2 2" shadow="receive: true"></a-box>
-        <a-box position="-5 2.5 0" rotation="0 90 0" width="10" height="5" depth="0.1" material="src: #wallpaper; repeat: 2 2" shadow="receive: true"></a-box>
-        <a-box position="0 2.5 5" rotation="0 180 0" width="10" height="5" depth="0.1" material="src: #wallpaper; repeat: 2 2" shadow="receive: true"></a-box>
-
-        <a-plane position="0 5 0" rotation="90 0 0" width="10" height="10" material="color: #443322; roughness: 0.8"></a-plane>
-
-        <a-box position="0 0.5 -4" width="2" height="1" depth="0.8" color="#5a2e1e" shadow></a-box> <a-box position="0 1.2 -4.8" width="1.8" height="1" depth="0.1" color="#222" shadow></a-box> <a-box position="0 0.4 -4.9" width="2" height="0.8" depth="0.4" color="#333" shadow></a-box> <a-entity id="christmas-lights" position="0 4.5 -4.9"></a-entity>
-
-        <a-entity id="mike" class="target" position="-1.5 0 -3">
-            <a-box class="mesh" position="0 0.8 0" width="0.6" height="1.6" color="#34495e" shadow></a-box>
-            <a-sphere position="0 1.8 0" radius="0.35" color="#f3dbb3"></a-sphere>
-            <a-text value="MIKE" align="center" position="0 2.5 0" width="4" color="#ff0000"></a-text>
+        <a-entity id="mike" class="target" position="-2 0 -3" onclick="hit(this)">
+            <a-box position="0 0.7 0" width="0.6" height="1.4" color="#34495e"></a-box>
+            <a-sphere position="0 1.7 0" radius="0.3" color="#f3dbb3"></a-sphere>
         </a-entity>
 
-        <a-entity id="dustin" class="target" position="1.5 0 -3">
-            <a-box class="mesh" position="0 0.8 0" width="0.6" height="1.6" color="#2980b9" shadow></a-box>
-            <a-sphere position="0 1.8 0" radius="0.35" color="#f3dbb3"></a-sphere>
-            <a-text value="DUSTIN" align="center" position="0 2.5 0" width="4" color="#ff0000"></a-text>
+        <a-entity id="dustin" class="target" position="2 0 -3" onclick="hit(this)">
+            <a-box position="0 0.7 0" width="0.6" height="1.4" color="#2980b9"></a-box>
+            <a-sphere position="0 1.7 0" radius="0.3" color="#f3dbb3"></a-sphere>
         </a-entity>
-
-        <a-entity id="spores"></a-entity>
 
     </a-scene>
 
     <script>
-        const cam = document.getElementById('cam');
-        const leftHand = document.getElementById('left-hand');
-        const rightHand = document.getElementById('right-hand');
-        const vrBtn = document.getElementById('vr-btn');
-        let audioCtx;
-
-        // Inicia a experiência VR e o contexto de áudio
-        function initGame() {
-            document.querySelector('a-scene').enterVR();
-            vrBtn.style.display = 'none';
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        // Geração das luzes de Natal e partículas
-        const lightString = document.getElementById('christmas-lights');
-        const sporeContainer = document.getElementById('spores');
-        const colors = ['#f00', '#ff0', '#00f', '#0f0', '#f0f'];
-
-        for(let i=0; i<10; i++) { // Menos luzes para a sala
-            let l = document.createElement('a-entity');
-            l.setAttribute('mixin', 'light-bulb');
-            l.setAttribute('position', `${(i-4.5)*1.1} 0 0`);
-            l.setAttribute('color', colors[i%5]);
-            l.setAttribute('light', `type: point; distance: 1.5; intensity: 0.8; color: ${colors[i%5]}`);
-            l.setAttribute('animation', `property: light.intensity; from: 0.1; to: 1.2; dur: ${600+i*100}; loop: true; dir: alternate`);
-            lightString.appendChild(l);
-        }
-
-        for(let i=0; i<50; i++) { // Partículas mais sutis
-            let p = document.createElement('a-sphere');
-            p.setAttribute('radius', '0.005');
-            p.setAttribute('color', '#eee');
-            p.setAttribute('position', `${(Math.random()-0.5)*10} ${Math.random()*3} ${(Math.random()-0.5)*10}`);
-            p.setAttribute('opacity', '0.4');
-            p.setAttribute('animation', `property: position; to: ${(Math.random()-0.5)*10} ${Math.random()*3} ${(Math.random()-0.5)*10}; dur: ${8000+i*500}; loop: true; dir: alternate`);
-            sporeContainer.appendChild(p);
-        }
-
-        // Som de impacto (mais grave e ressonante)
-        function playImpactSound() {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            osc.type = 'sawtooth'; // Som mais "rasgante"
-            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.3);
-            g.gain.setValueAtTime(0.7, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-        }
-
-        // Lógica de ataque telecinético
-        function performTelekinesis() {
-            // Animação das mãos para frente
-            leftHand.setAttribute('animation', 'property: position; to: -0.2 -0.2 -1.2; dur: 100; dir: alternate; loop: 1');
-            rightHand.setAttribute('animation', 'property: position; to: 0.2 -0.2 -1.2; dur: 100; dir: alternate; loop: 1');
-            
-            // Raycast a partir da câmera
-            const cursor = document.getElementById('cursor');
-            const intersection = cursor.components.raycaster.getIntersection(document.querySelector('.target'));
-
-            if (intersection) {
-                const target = intersection.el;
-                const mesh = target.querySelector('.mesh');
-                
-                playImpactSound();
-                mesh.setAttribute('material', 'color: #ff0000; emissive: #ff0000; emissiveIntensity: 1'); // Brilha vermelho
-                
-                // Tremor na câmera
-                cam.setAttribute('animation__shake', 'property: position; to: 0 0.05 0; dur: 80; dir: alternate; loop: 2');
-
-                // Empurrar o boneco
-                target.setAttribute('animation__push', 'property: position; to: 0 0 -1; dur: 200; dir: alternate; loop: 1; isRawProperty: true');
-                
-                setTimeout(() => {
-                    mesh.setAttribute('material', 'color', target.id === 'mike' ? '#34495e' : '#2980b9');
-                    mesh.setAttribute('material', 'emissiveIntensity', '0');
-                    cam.removeAttribute('animation__shake');
-                    target.removeAttribute('animation__push');
-                }, 300);
-            }
-        }
-
-        // Eventos de interação (toque/clique)
-        window.addEventListener('touchstart', performTelekinesis);
-        window.addEventListener('mousedown', (e) => { if(e.button === 0) performTelekinesis(); });
-
-        // Componente para fazer objetos piscagem
-        AFRAME.registerComponent('flicker', {
-            schema: {
-                min: {type: 'number', default: 0.5},
-                max: {type: 'number', default: 1.5},
-                speed: {type: 'number', default: 100}
-            },
-            init: function () {
-                var self = this;
-                this.originalColor = this.el.getAttribute('material').color;
-                setInterval(function () {
-                    var intensity = Math.random() * (self.data.max - self.data.min) + self.data.min;
-                    self.el.setAttribute('material', 'emissiveIntensity', intensity);
-                }, this.data.speed);
+        const rig = document.getElementById('rig');
+        const btn = document.getElementById('btn-start');
+        
+        // 1. Corrigir Movimento da Câmera (Permissão de Sensores)
+        btn.addEventListener('click', function() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response == 'granted') {
+                            initGame();
+                        }
+                    })
+                    .catch(console.error);
+            } else {
+                initGame();
             }
         });
 
-        // Adicionar o flicker aos bonecos
-        document.querySelectorAll('.target .mesh').forEach(el => el.setAttribute('flicker', 'min: 0.1; max: 0.3; speed: 150'));
+        function initGame() {
+            document.querySelector('a-scene').enterVR();
+            btn.style.display = 'none';
+        }
 
+        // 2. Sistema de Teletransporte por Olhar
+        document.querySelector('.floor').addEventListener('click', function (evt) {
+            // evt.detail.intersection.point dá a coordenada exata onde o usuário olhou
+            const newPos = evt.detail.intersection.point;
+            rig.setAttribute('animation', {
+                property: 'position',
+                to: `${newPos.x} 0 ${newPos.z}`,
+                dur: 300,
+                easing: 'easeInQuad'
+            });
+        });
+
+        // 3. Sistema de Ataque (Ao olhar fixamente para o personagem)
+        function hit(el) {
+            el.setAttribute('animation', 'property: scale; to: 1.2 1.2 1.2; dur: 100; dir: alternate; loop: 1');
+            const box = el.querySelector('a-box');
+            const originalColor = box.getAttribute('color');
+            box.setAttribute('color', '#ff0000');
+            setTimeout(() => box.setAttribute('color', originalColor), 300);
+        }
+
+        // Geração das Luzes de Natal
+        const lightBox = document.getElementById('xmas-lights');
+        const colors = ['#f00', '#ff0', '#00f', '#0f0', '#f0f'];
+        for(let i=0; i<10; i++) {
+            let l = document.createElement('a-sphere');
+            l.setAttribute('position', `${(i-4.5)*1.2} 0 0`);
+            l.setAttribute('radius', '0.07');
+            l.setAttribute('color', colors[i%5]);
+            l.setAttribute('light', `type: point; distance: 2; intensity: 1`);
+            lightBox.appendChild(l);
+        }
     </script>
 </body>
 </html>
