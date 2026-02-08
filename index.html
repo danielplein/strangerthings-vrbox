@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stranger Things VR - Casa dos Wheelers (Camera Motion)</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+    <a-scene fog="type: exponential; color: #0a0a0a; density: 0.15">
+        
+        <a-assets>
+            <img id="wall-texture" src="https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/wood/wood_diffuse.jpg">
+            <img id="floor-texture" src="https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/images/dirt/dirt_diffuse.jpg">
+            <audio id="mike-dialog" src="https://cdn.glitch.com/b594b29f-72fc-4b3c-99b0-137a28e82a92%2Fmike_hey.mp3?v=1612345678901" preload="auto"></audio>
+            <audio id="nancy-dialog" src="https://cdn.glitch.com/b594b29f-72fc-4b3c-99b0-137a28e82a92%2Fnancy_what.mp3?v=1612345678902" preload="auto"></audio>
+            <audio id="dustin-dialog" src="https://cdn.glitch.com/b594b29f-72fc-4b3c-99b0-137a28e82a92%2Fdustin_greetings.mp3?v=1612345678903" preload="auto"></audio>
+            <audio id="demogorgon-roar" src="https://cdn.glitch.com/b594b29f-72fc-4b3c-99b0-137a28e82a92%2Fdemogorgon_roar.mp3?v=1612345678904" preload="auto"></audio>
+        </a-assets>
+
+        <a-entity id="rig" position="0 1.6 0">
+            <a-camera id="camera" look-controls-enabled="false">
+                <a-light type="spot" color="#fff" intensity="2" distance="15" angle="25" position="0 0 0"></a-light>
+                <a-cursor color="red"></a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <a-entity position="0 2.25 -15" particle-system="color: #AAA; size: 0.1; particleCount: 5000; velocityValue: 0 0.1 0"></a-entity>
+
+        <a-sky color="#050505"></a-sky>
+        
+        <a-entity id="ground-floor">
+            <a-plane src="#floor-texture" repeat="10 10" rotation="-90 0 0" width="20" height="20" color="#222" shadow></a-plane>
+
+            <a-box material="src: #wall-texture; repeat: 4 2" position="0 1 -10" width="18" height="2" depth="0.5" shadow></a-box>
+            <a-box material="src: #wall-texture; repeat: 4 2" position="0 1 0" width="18" height="2" depth="0.5" shadow></a-box>
+            <a-box material="src: #wall-texture; repeat: 4 2" position="-9 1 -5" width="0.5" height="2" depth="10" shadow></a-box>
+            <a-box material="src: #wall-texture; repeat: 4 2" position="9 1 -5" width="0.5" height="2" depth="10" shadow></a-box>
+
+            <a-box material="src: #wall-texture; repeat: 2 2" position="6 1 -7" width="0.5" height="2" depth="6" shadow></a-box>
+
+            <a-entity position="-7.5 0 -9.5">
+                <a-box color="#444" width="2" height="2" depth="0.2" position="0 1 0"></a-box>
+                <a-text value="Porão" color="#fff" width="4" position="-0.8 1 0.1"></a-text>
+            </a-entity>
+        </a-entity>
+
+        <a-entity id="basement" position="-7.5 -2 -14">
+            <a-plane src="#floor-texture" repeat="5 5" rotation="-90 0 0" width="8" height="8" color="#111" shadow></a-plane>
+            <a-box material="color: #333" position="0 1 -4" width="8" height="2" depth="0.5" shadow></a-box>
+            <a-box material="color: #333" position="0 1 4" width="8" height="2" depth="0.5" shadow></a-box>
+            <a-box material="color: #333" position="-4 1 0" width="0.5" height="2" depth="8" shadow></a-box>
+            <a-box material="color: #333" position="4 1 0" width="0.5" height="2" depth="8" shadow></a-box>
+
+            <a-entity gltf-model="url(https://raw.githubusercontent.com/aframevr/sample-assets/master/assets/models/radio/scene.gltf)" 
+                      scale="0.05 0.05 0.05" position="0.5 0.5 -3.5" rotation="0 90 0">
+                <a-sound src="#demogorgon-roar" autoplay="false" loop="false" positional="true"></a-sound>
+            </a-entity>
+        </a-entity>
+
+        <a-entity position="-5 0.8 -7">
+            <a-sphere radius="0.4" color="#0000FF" shadow></a-sphere>
+            <a-text value="Mike" color="#FFF" width="2" position="-0.5 0.8 0"></a-text>
+            <a-sound src="#mike-dialog" autoplay="false" loop="false" positional="true"></a-sound>
+        </a-entity>
+
+        <a-entity position="7 0.8 -6">
+            <a-sphere radius="0.4" color="#FF00FF" shadow></a-sphere>
+            <a-text value="Nancy" color="#FFF" width="2" position="-0.5 0.8 0"></a-text>
+            <a-sound src="#nancy-dialog" autoplay="false" loop="false" positional="true"></a-sound>
+        </a-entity>
+
+        <a-entity position="-4 0.8 -7.5">
+            <a-sphere radius="0.4" color="#FFFF00" shadow></a-sphere>
+            <a-text value="Dustin" color="#FFF" width="2" position="-0.5 0.8 0"></a-text>
+            <a-sound src="#dustin-dialog" autoplay="false" loop="false" positional="true"></a-sound>
+        </a-entity>
+
+        <a-entity position="2 0.8 -8.5">
+            <a-box width="2" height="0.5" depth="1" color="#555" shadow></a-box> <a-sphere radius="0.4" color="#808080" position="0 0.7 0" shadow></a-sphere>
+            <a-text value="Ted" color="#FFF" width="2" position="-0.3 1.5 0"></a-text>
+        </a-entity>
+
+        <a-entity position="7.5 0.8 -3">
+            <a-sphere radius="0.4" color="#FFA500" shadow></a-sphere>
+            <a-text value="Karen" color="#FFF" width="2" position="-0.5 0.8 0"></a-text>
+        </a-entity>
+
+    </a-scene>
+
+    <script>
+        const video = document.createElement('video');
+        const rig = document.getElementById('rig');
+        let prevImage = null;
+        let rotationY = 0; // Para acumular a rotação
+
+        // Pedir permissão para a câmera
+        // NOTE: Em alguns navegadores, getUserMedia pode falhar se não for chamada por um evento de usuário (clique)
+        document.body.addEventListener('click', () => {
+            if (!video.srcObject) { // Previni que chame múltiplas vezes
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }) // Câmera frontal
+                    .then(stream => {
+                        video.srcObject = stream;
+                        video.play();
+                        detectMotion();
+                        console.log("Câmera acessada. Clique na tela para iniciar.");
+                    })
+                    .catch(err => {
+                        console.error("Erro ao acessar a câmera: ", err);
+                        alert("Não foi possível acessar a câmera. Verifique as permissões.");
+                    });
+            }
+        }, { once: true }); // Executa apenas uma vez
+
+        function detectMotion() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 128; // Resolução um pouco maior para melhor detecção
+            canvas.height = 96;
+
+            setInterval(() => {
+                if (video.readyState < video.HAVE_PUPPY) return; // Garante que o vídeo está pronto
+                
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                
+                if (prevImage) {
+                    let diffX = 0;
+                    // Lógica de detecção de movimento simples (média de diferença de pixel)
+                    for (let i = 0; i < imageData.data.length; i += 4) { // Pula para cada pixel
+                        const prevPixelBrightness = (prevImage.data[i] + prevImage.data[i+1] + prevImage.data[i+2]) / 3;
+                        const currentPixelBrightness = (imageData.data[i] + imageData.data[i+1] + imageData.data[i+2]) / 3;
+                        
+                        const pixelDiff = currentPixelBrightness - prevPixelBrightness;
+                        
+                        // Contribuição do movimento horizontal
+                        const xPos = (i / 4) % canvas.width;
+                        if (Math.abs(pixelDiff) > 10) { // Limiar de mudança
+                            diffX += (xPos - (canvas.width / 2)) * pixelDiff;
+                        }
+                    }
+                    
+                    // Normaliza e aplica o movimento à rotação da câmera
+                    const sensitivity = 0.0000005; // Ajuste este valor
+                    rotationY += diffX * sensitivity;
+                    
+                    // Limitar a rotação para não virar infinitamente
+                    rotationY = Math.max(-Math.PI, Math.min(Math.PI, rotationY)); // +/- 180 graus
+
+                    rig.object3D.rotation.y = rotationY; 
+                }
+                prevImage = imageData;
+            }, 100); // Roda a cada 100ms
+        }
+
+        // Adicionar interatividade de áudio para os personagens
+        document.querySelectorAll('a-sound').forEach(soundElement => {
+            soundElement.parentNode.addEventListener('click', () => {
+                if (soundElement.components.sound) {
+                    soundElement.components.sound.playSound();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
